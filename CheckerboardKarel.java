@@ -11,43 +11,99 @@ import stanford.karel.*;
 
 public class CheckerboardKarel extends SuperKarel {
 
-  public void run() {
+	public void run (){
+
+		if (frontIsBlocked()){ 	// when just a one line column
+			positionNorth();	// distributes vertically
+			distributeBeepers();
+		} else {
+			distributeBeepers();
+			
+			while (leftIsClear()){
+				repositionForRowToWest();
+			 	if (rightIsClear()){
+				repositionForRowToEast();
+			}	else {
+				turnAround();
+				}
+			}
+		}
 		
-		while (frontIsClear()){
-		firstRow();
-		moveUpwardsRight();
-		firstRow();
-		moveUpwardsLeft();
+	}
+
+	// lets karel face north
+	private void positionNorth(){
+		while (notFacingNorth()){
+			turnLeft();
 		}
 	}
 	
-	// puts beepers in the first column
-	private void firstRow(){
+	// move when no wall in front
+	private void moveIfClear(){
+		if (frontIsClear()){
+			move();
+		}
+	}
+	
+	// moves one space backwards
+	private void moveBackwards(){
+		turnAround();
+		moveIfClear();
+		turnAround();
+	}
+	
+	// distribute Beepers in every second spot
+	private void distributeBeepers(){
 		while (frontIsClear()){
 			move();
 			putBeeper();
-			if (frontIsClear()){
+			moveIfClear();
+		}
+		moveBackwards();
+	}
+	
+	
+	// at the end of the column karel positions himself one column up
+	// and starts distributing the beepers for the column.
+	// It also checks if a beeper is or isn't present on the given
+	// spot, so that the Checkerboard pattern is guaranteed. 
+	private void repositionForRowToWest(){
+			if (beepersPresent()){
 				move();
+				turnLeft();
+				move();
+				turnLeft();
+				putBeeper();
+				move();
+				distributeBeepers();
+			} else {
+				move();
+				turnLeft();
+				move();
+				turnLeft();
+				distributeBeepers();
 			}
-		}
+		
 	}
 	
-	// used to move one column up if karel is positioned on the right hand side
-	private void moveUpwardsRight(){
-		turnLeft();
-		if (frontIsClear()){
-		move();
-		turnLeft();
-		}
+	// same as repositionForRowToWest - just for the Row to East! :)
+	private void repositionForRowToEast(){
+		 if (beepersPresent()){
+			move();
+			turnRight();
+			move();
+			turnRight();
+			putBeeper();
+			move();
+			distributeBeepers();
+		 } else {
+			move();
+			turnRight();
+			move();
+			turnRight();
+			distributeBeepers();
+		 }
+		
 	}
 	
-	// used to move one column up of karel is positioned on the left hand side
-	private void moveUpwardsLeft(){
-		turnRight();
-		if (frontIsClear()){
-		move();
-		turnRight();
-		}
-	}
-
-} // end class
+} //end class
